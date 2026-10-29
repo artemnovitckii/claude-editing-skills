@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Shared kit for the editing skills: clip prep, word timings, captions, HyperFrames comps, render and checks.
 
-    python kit/reel.py words <video> [--start S] [--end E]   # word timings, local to S (transcribes on first use)
+    python kit/reel.py words <video> [--start S] [--end E]   # word@start per sentence + when it ends (transcribes on first use)
     python kit/reel.py frame <video> <t> <out.jpg>           # one 9:16 frame with a y ruler, to find eyes and chin
     python kit/reel.py sheet <video.mp4> <out.jpg> [n]       # contact sheet with the Instagram safe zone drawn
 
@@ -183,10 +183,18 @@ def load_words(video, start, end, transcript=None):
         transcribe(video, tp)
     d = json.loads(Path(tp).read_text())
     ws = d.get('words') or [w for s in d.get('segments', []) for w in s.get('words', [])]
-    out = []
+    # Whisper sometimes starts a sentence's first word before the last word of the previous one has ended
+    # ("this.@7.02-7.44 For@6.90"): push such starts to the previous end so words stay in order
+    fixed, prev_end = [], 0.0
     for w in ws:
-        if start - 0.05 <= w['start'] < end - 0.08:
-            out.append((w['word'].strip(), round(max(w['start'], start) - start, 3), round(min(w['end'], end) - start, 3)))
+        st = max(float(w['start']), prev_end)
+        en = max(float(w['end']), st + 0.05)
+        fixed.append((w['word'].strip(), st, en))
+        prev_end = en
+    out = []
+    for w, st, en in fixed:
+        if start - 0.05 <= st < end - 0.08:
+            out.append((w, round(max(st, start) - start, 3), round(min(en, end) - start, 3)))
     return out
 
 
@@ -456,14 +464,16 @@ def main():
     if x.cmd == 'words':
         end = x.end or duration(x.video)
         ws = load_words(x.video, x.start, end, x.transcript)
+        # one sentence per line; times are local to --start; [ends] is when the sentence's last word ends,
+        # so start + that is a clean "end" for a spec
         line = []
-        for w, t, _ in ws:
+        for w, t, e in ws:
             line.append(f'{w}@{t:.2f}')
             if w.endswith(('.', '?', '!')):
-                print(' '.join(line))
+                print(' '.join(line) + f'   [ends {e:.2f}]')
                 line = []
         if line:
-            print(' '.join(line))
+            print(' '.join(line) + f'   [ends {ws[-1][2]:.2f}]')
     elif x.cmd == 'frame':
         frame(x.video, x.t, x.out)
         print('wrote', x.out)

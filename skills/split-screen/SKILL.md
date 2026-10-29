@@ -21,7 +21,7 @@ description: Edits a talking-head clip into the classic half-and-half reel. Visu
 ## First use
 This skill's folder is the "Base directory" Claude Code shows when it loads it.
 ```bash
-SKILL_DIR="<base directory of this skill>"
+SKILL_DIR="<base directory of this skill>"   # the path Claude Code printed as "Base directory for this skill"
 KIT=$(python3 -c 'import os,sys;print(os.path.realpath(os.path.join(sys.argv[1],"..","..","kit")))' "$SKILL_DIR")
 PY="$KIT/.venv/bin/python"; [ -x "$PY" ] || bash "$KIT/setup.sh"
 ```
@@ -29,12 +29,12 @@ PY="$KIT/.venv/bin/python"; [ -x "$PY" ] || bash "$KIT/setup.sh"
 
 ## Steps
 1. **Clip.** Any 9:16 talking head.
-2. **Words.** Run `"$PY" "$KIT/reel.py" words <video>`. Pick a 4 to 8 second stretch that walks through ONE step ("I use this tool… then I pick one… then I hit this button").
-3. **Face.** Run `"$PY" "$KIT/reel.py" frame <video> <t> /tmp/f.jpg` and read the y of the eyes (call it E).
+2. **Words.** Run `"$PY" "$KIT/reel.py" words <video>`. It prints one sentence per line with `[ends …]` (when its last word ends), so use that as `end`. Pick a 4 to 8 second stretch of whole sentences that walks through ONE step ("I use this tool… then I pick one… then I hit this button").
+3. **Face.** Run `"$PY" "$KIT/reel.py" frame <video> <t> frame.jpg` and read the y of the eyes (call it E).
    - The bottom half shows the clip from y `-video_top` to `-video_top + 960`.
-   - Set `video_top` so the eyes land about 300 px into the bottom half: `video_top = 1260 - E`, usually -400 to -480.
+   - Set `video_top` so the eyes land about 300 px into the bottom half: `video_top = 300 - E` (eyes at 730 gives -430; a close-up with eyes at 935 gives -635).
    - The chin must stay above y 1500, where Instagram's caption UI starts.
-4. **Spec.** Write `<clip>.split-screen.json` (below). Times are seconds from `start`, or spoken words.
+4. **Spec.** Write `<clip>.split-screen.json` (below). Paths in a spec are relative to the spec file. Times are seconds from `start`, or spoken words.
 5. **Build.** Run `"$PY" "$SKILL_DIR/build.py" <spec.json>`.
 6. **Check.** Look at `<out>.sheet.jpg`:
    - The headline is clear of the top 220 px.

@@ -20,7 +20,7 @@ description: Edits a talking-head clip into a tier-list ranking reel. An S-to-F 
 ## First use
 This skill's folder is the "Base directory" Claude Code shows when it loads it.
 ```bash
-SKILL_DIR="<base directory of this skill>"
+SKILL_DIR="<base directory of this skill>"   # the path Claude Code printed as "Base directory for this skill"
 KIT=$(python3 -c 'import os,sys;print(os.path.realpath(os.path.join(sys.argv[1],"..","..","kit")))' "$SKILL_DIR")
 PY="$KIT/.venv/bin/python"; [ -x "$PY" ] || bash "$KIT/setup.sh"
 ```
@@ -28,12 +28,13 @@ PY="$KIT/.venv/bin/python"; [ -x "$PY" ] || bash "$KIT/setup.sh"
 
 ## Steps
 1. **Clip.** A 9:16 talking head where the speaker names things and judges them ("carousels are S tier… reels, B").
-2. **Words.** Run `"$PY" "$KIT/reel.py" words <video>`. Find each item's name and its verdict. The item pops on its name and drops on its verdict. Pick a stretch that holds 1 to 5 items, and keep `end` at least 0.4 s after the last drop.
-3. **Chin.** Run `"$PY" "$KIT/reel.py" frame <video> <t> /tmp/f.jpg` and read the y of the chin.
+2. **Words.** Run `"$PY" "$KIT/reel.py" words <video>`. It prints one sentence per line with `[ends …]` (when its last word ends). Find each item's name and its verdict. The item pops on its name and drops on its verdict. Pick a stretch that holds 1 to 5 items, and keep `end` at least 0.4 s after the last drop.
+3. **Chin.** Run `"$PY" "$KIT/reel.py" frame <video> <t> frame.jpg` and read the y of the chin.
    - Set `caption_top` about 40 px under the chin.
    - Set `table_top` 80 px under that.
+   - On a close-up (chin below about y 1150), use 3 or 4 `tiers` so the table stays above y 1500. The item card shrinks itself to fit.
    - Captions must never sit on the face.
-4. **Spec.** Write `<clip>.ranking-list.json` (below). Times are seconds from `start`, or spoken words.
+4. **Spec.** Write `<clip>.ranking-list.json` (below). Paths in a spec are relative to the spec file. Times are seconds from `start`, or spoken words.
 5. **Build.** Run `"$PY" "$SKILL_DIR/build.py" <spec.json>`.
 6. **Check.** Look at `<out>.sheet.jpg`:
    - The caption is under the chin.

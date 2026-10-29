@@ -21,16 +21,29 @@ from reel import Job, Comp, cover_html, rich, word_caps  # noqa: E402
 ACC = '#C15F3C'
 
 
+def text_card(big, small, dark):
+    bg, fg, sub = ('#1d1b18', '#fff', 'rgba(255,255,255,.6)') if dark else ('#fff', '#111', '#7a7368')
+    return (f'<div class="tcard" style="background:{bg};color:{fg}"><div class="tb">{rich(big)}</div>'
+            f'<div class="ts" style="color:{sub}">{html.escape(small)}</div></div>')
+
+
 def compare(j, c, v):
     L, R = v.get('left') or {}, v.get('right') or {}
     limgs = j.images(L.get('images'))
-    if not limgs:
-        sys.exit('visual.left.images is empty')
-    strip = ''.join(f'<img src="{c.asset(s)}">' for s in limgs[:3])
-    if R.get('text'):
-        right = cover_html(c, 270, (j.images(R.get('image')) or [None])[0], R['text'], R.get('cta', 'SWIPE →'))
+    if limgs:
+        strip = ''.join(f'<img src="{c.asset(s)}">' for s in limgs[:3])
+    elif L.get('big'):
+        strip = text_card(L['big'], L.get('small', ''), dark=False)
     else:
+        sys.exit('visual.left needs images, or big (+ small) for a text card')
+    if R.get('big') and not R.get('image'):
+        right = text_card(R['big'], R.get('small', ''), dark=True)
+    elif R.get('text'):
+        right = cover_html(c, 270, (j.images(R.get('image')) or [None])[0], R['text'], R.get('cta', 'SWIPE →'))
+    elif R.get('image'):
         right = f'<img src="{c.asset(j.images(R.get("image"))[0])}" style="width:270px;height:338px;object-fit:cover;border-radius:12px">'
+    else:
+        sys.exit('visual.right needs image, image + text, or big (+ small) for a text card')
     chip = f'<div id="vch" class="hid">{html.escape(L["chip"])}</div>' if L.get('chip') else ''
     c.body.append(f'''<div class="lab" id="lab0" style="left:110px;top:340px">{html.escape(L.get("label", "Before"))}</div>
 <div class="lab" id="lab1" style="left:700px;top:340px;color:{ACC}">{html.escape(R.get("label", "After"))}</div>
@@ -49,7 +62,7 @@ def compare(j, c, v):
         ch = j.t(L.get('chip_at'), la + 0.8)
         c.js.append(f'tl.set("#vch",{{visibility:"visible"}},{ch:.3f});'
                     f'tl.fromTo("#vch",{{scale:.4,autoAlpha:0}},{{scale:1,autoAlpha:1,duration:.22,ease:"back.out(2.5)"}},{ch:.3f});')
-    for k, s in enumerate((L.get('swipe_at') or [])[:len(limgs[:3]) - 1]):
+    for k, s in enumerate((L.get('swipe_at') or [])[:max(0, len(limgs[:3]) - 1)]):
         c.js.append(f'tl.to("#lc .strip",{{x:{-270 * (k + 1)},duration:.3,ease:"power2.inOut"}},{j.t(s):.3f});')
     c.js.append(f'''tl.set("#rc0",{{visibility:"visible"}},{ra:.3f});
 tl.fromTo(["#lab1","#rc0"],{{y:30,autoAlpha:0}},{{y:0,autoAlpha:1,duration:.3,stagger:.05,ease:"power3.out"}},{ra:.3f});
@@ -63,8 +76,9 @@ tl.fromTo("#rc",{{scale:1.06}},{{scale:1,duration:.4,ease:"power3.out"}},{rv:.3f
 def listing(j, c, v):
     items = v.get('items') or []
     rows = ''.join(f'<div class="li" id="li{i}"><b>{i + 1}</b><span>{rich(it["text"])}</span></div>' for i, it in enumerate(items))
-    c.css.append(f'''#lst{{left:120px;top:350px;width:840px}}
-.li{{display:flex;align-items:center;gap:26px;height:{min(118, 420 // max(1, len(items)))}px;font:700 50px/1.05 'Inter';color:#111;letter-spacing:-.02em}}
+    rh = min(118, 420 // max(1, len(items)))
+    c.css.append(f'''#lst{{left:120px;top:{330 + (430 - rh * len(items)) // 2}px;width:840px}}
+.li{{display:flex;align-items:center;gap:26px;height:{rh}px;font:700 50px/1.05 'Inter';color:#111;letter-spacing:-.02em}}
 .li b{{width:72px;height:72px;border-radius:20px;background:{ACC};color:#fff;display:grid;place-items:center;font:800 38px 'Inter';flex:none}}
 .li em{{font:italic 400 60px 'DM Serif Display';color:{ACC};letter-spacing:0}}''')
     c.body.append(f'<div id="lst" class="a">{rows}</div>')
@@ -99,6 +113,11 @@ def main(spec):
 .kx{{position:absolute;left:0;width:1080px;top:{cap}px;text-align:center;visibility:hidden;font:800 70px/1 'Inter';color:#fff;
   letter-spacing:-.02em;text-shadow:0 3px 6px rgba(0,0,0,.55),0 6px 26px rgba(0,0,0,.6)}}
 .kx em{{font:italic 400 84px/1 'DM Serif Display';color:#fff;letter-spacing:0}}
+.tcard{{width:270px;height:338px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:24px;text-align:center}}
+.tcard .tb{{font:800 64px/1 'Inter';letter-spacing:-.03em}}
+.tcard .tb em{{font:italic 400 76px/1 'DM Serif Display';color:{ACC}}}
+.tcard .ts{{font:600 24px/1.25 'Inter'}}
 ''')
     c.body.append('<div id="bk" class="a"></div>')
     words = rich(j.get('title', '')).split(' ')

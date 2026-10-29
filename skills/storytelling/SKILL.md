@@ -19,7 +19,7 @@ description: Edits a talking-head clip into a storytelling reel. Three simple im
 ## First use
 This skill's folder is the "Base directory" Claude Code shows when it loads it.
 ```bash
-SKILL_DIR="<base directory of this skill>"
+SKILL_DIR="<base directory of this skill>"   # the path Claude Code printed as "Base directory for this skill"
 KIT=$(python3 -c 'import os,sys;print(os.path.realpath(os.path.join(sys.argv[1],"..","..","kit")))' "$SKILL_DIR")
 PY="$KIT/.venv/bin/python"; [ -x "$PY" ] || bash "$KIT/setup.sh"
 ```
@@ -27,8 +27,8 @@ PY="$KIT/.venv/bin/python"; [ -x "$PY" ] || bash "$KIT/setup.sh"
 
 ## Steps
 1. **Clip.** Any 9:16 talking head.
-2. **Words.** Run `"$PY" "$KIT/reel.py" words <video>`. Pick ONE continuous stretch of 4 to 8 seconds that tells a small story or shows proof. Don't stitch pieces together, because the jump cuts read as weird here.
-3. **Spec.** Write `<clip>.storytelling.json` (below). The three cards are the story in pictures: the effort, the thing and the result.
+2. **Words.** Run `"$PY" "$KIT/reel.py" words <video>`. It prints one sentence per line with `[ends …]` (when its last word ends), so use that as `end`. Pick ONE continuous stretch of 4 to 8 seconds that tells a small story or shows proof. Don't stitch pieces together, because the jump cuts read as weird here.
+3. **Spec.** Write `<clip>.storytelling.json` (below). Paths in a spec are relative to the spec file. The three cards are the story in pictures: the effort, the thing and the result.
 4. **Build.** Run `"$PY" "$SKILL_DIR/build.py" <spec.json>`.
 5. **Check.** Look at `<out>.sheet.jpg`:
    - The cards and title clear the top 220 px.
