@@ -1,0 +1,10 @@
+{
+  "name": "editing-skills",
+  "version": "1.0.0",
+  "description": "Six Claude Code skills that edit a talking-head clip into a finished reel: trial reels, behind the person, explainer, split screen, ranking list and storytelling. Rendered on your computer with HyperFrames.",
+  "author": { "name": "Artem Novitckii", "url": "https://novitckii.com" },
+  "homepage": "https://novitckii.com/resources/editing-skills/",
+  "repository": "https://github.com/artemnovitckii/claude-editing-skills",
+  "license": "MIT",
+  "keywords": ["video", "reels", "editing", "hyperframes", "instagram", "captions"]
+}

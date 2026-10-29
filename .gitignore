@@ -1,0 +1,7 @@
+kit/.venv/
+kit/vendor/
+kit/models/
+__pycache__/
+.work/
+*.transcript.json
+.DS_Store
