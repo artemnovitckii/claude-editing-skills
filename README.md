@@ -36,12 +36,12 @@ cd ~/claude-editing-skills && ./install.sh
 
 To update later, run `git pull && ./install.sh`.
 
-**Or as a Claude Code plugin.** Run these inside Claude Code:
+**It's also packaged as a Claude Code plugin.** Run these inside Claude Code:
 ```
 /plugin marketplace add artemnovitckii/claude-editing-skills
 /plugin install editing-skills@claude-editing-skills
 ```
-Plugin skills are namespaced (`/editing-skills:explainer`). The first run sets itself up.
+Plugin skills are namespaced (`/editing-skills:explainer`). The git clone above is the route tested end to end.
 
 ## Use
 
