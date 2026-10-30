@@ -21,3 +21,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 The fonts in kit/fonts are under the SIL Open Font License 1.1 (see the OFL-*.txt files next to them).
+
+Third-party photographs, sample footage and preview media in assets/style-showcase and docs/style-showcase are excluded from this software license. See assets/style-showcase/README.md and sources.json for credits and rights information.

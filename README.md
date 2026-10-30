@@ -1,6 +1,6 @@
 # Claude editing skills
 
-Skills for Claude Code that edit your talking-head clips into finished reels. You type `/explainer` and give it a clip. Claude reads what you say, picks the moment, plans the visuals around your words and renders the reel on your own computer.
+Eleven skills for Claude Code: six workflows that edit your talking-head clips around your words, plus five photographic styles with editable templates and included image assets. Rendering happens on your own computer.
 
 ![The six skills, one frame each](docs/skills.jpg)
 
@@ -13,13 +13,29 @@ Skills for Claude Code that edit your talking-head clips into finished reels. Yo
 | `/ranking-list` | **A tier list on your chest.** Each item pops up when you name it and drops into its tier (S to F) on the verdict. |
 | `/storytelling` | **Three image cards, a title and a subtitle**, all landing together over one continuous take, with simple TikTok-style captions. |
 
-See them moving: **[novitckii.com/resources/editing-skills](https://novitckii.com/resources/editing-skills/)**
+## Five new photographic styles
+
+| Skill | What it makes |
+|---|---|
+| [`/shape-shift`](skills/shape-shift/SKILL.md) | Circular photographic match cuts above an established speaker. |
+| [`/picture-stack`](skills/picture-stack/SKILL.md) | Three image cards above the speaker, then one expands into focus. |
+| [`/scene-switch`](skills/scene-switch/SKILL.md) | Sharp photographic backgrounds change behind a continuous speaker cutout. |
+| [`/visual-notes`](skills/visual-notes/SKILL.md) | A complete image becomes a close-up of one meaningful detail. |
+| [`/orbit-reel`](skills/orbit-reel/SKILL.md) | Image cards orbit in 3D, passing behind and in front of the speaker. |
+
+| Shape Shift | Picture Stack | Scene Switch | Visual Notes | Orbit Reel |
+|---|---|---|---|---|
+| [![Shape Shift](docs/style-showcase/shape-shift.jpg)](docs/style-showcase/shape-shift.mp4) | [![Picture Stack](docs/style-showcase/picture-stack.jpg)](docs/style-showcase/picture-stack.mp4) | [![Scene Switch](docs/style-showcase/scene-switch.jpg)](docs/style-showcase/scene-switch.mp4) | [![Visual Notes](docs/style-showcase/visual-notes.jpg)](docs/style-showcase/visual-notes.mp4) | [![Orbit Reel](docs/style-showcase/orbit-reel.jpg)](docs/style-showcase/orbit-reel.mp4) |
+
+Click an image for its moving preview. These five start from reviewed **4.2-second silent templates**, with nine source photographs and sample footage included. They can showcase a visual idea independently of the spoken topic. [Build and customize them](docs/style-showcase/README.md) · [Browse the images and credits](assets/style-showcase/README.md).
+
+See the original six moving: **[novitckii.com/resources/editing-skills](https://novitckii.com/resources/editing-skills/)**
 
 More skills are coming. Pull the repo to get them.
 
 ## Install
 
-You need macOS or Linux with **ffmpeg**, **Node.js 18+** and **Python 3.9+**, plus a free **[Groq API key](https://console.groq.com/keys)** for the transcripts.
+You need macOS or Linux with **ffmpeg**, **Node.js 22+** and **Python 3.9+**, plus a free **[Groq API key](https://console.groq.com/keys)** for the original six skills’ transcripts. The five photographic templates do not require an API key.
 
 ```bash
 brew install ffmpeg node        # if you don't have them
@@ -32,7 +48,7 @@ cd ~/claude-editing-skills && ./install.sh
 - makes a Python environment in `kit/.venv`
 - fetches GSAP
 - warms up HyperFrames
-- downloads the matting model
+- downloads the matting model when run with `--cutout`
 
 To update later, run `git pull && ./install.sh`.
 
@@ -43,7 +59,7 @@ To update later, run `git pull && ./install.sh`.
 ```
 Plugin skills are namespaced (`/editing-skills:explainer`). The git clone above is the route tested end to end.
 
-## Use
+## Use the original six workflows
 
 Open Claude Code anywhere and point it at a clip:
 
@@ -53,7 +69,7 @@ Open Claude Code anywhere and point it at a clip:
 /behind-the-person ~/Downloads/clip.mp4, my posts are in ~/Desktop/posts
 ```
 
-Each skill does the same five things:
+The original six skills follow these five steps:
 1. It transcribes the clip with word timings (Groq Whisper).
 2. It picks a stretch and looks at a frame to find your eyes and chin.
 3. It writes a small JSON spec next to your clip. Every visual is anchored to a spoken word, so it lands when you say it.
@@ -75,7 +91,7 @@ kit/cutout.py              speaker cutout (RobustVideoMatting, ONNX on the CPU) 
 kit/setup.sh               one-time setup
 ```
 
-To add a skill, copy a folder in `skills/` and change its `build.py`. A build is always `Job(spec) -> Comp -> finish()`, and the kit handles clips, words, captions, rendering and the safe-zone sheet. Then run `./install.sh` again.
+To add a skill, copy a folder in `skills/` and change its `build.py`. The original six use `Job(spec) -> Comp -> finish()` for clips, words, captions, rendering and safe-zone sheets. The five photographic styles use `kit/style_template.py` to prepare their editable HTML templates and media overrides. Then run `./install.sh` again.
 
 ## Credits
 
@@ -85,4 +101,4 @@ To add a skill, copy a folder in `skills/` and change its `build.py`. A build is
 - Transcription is Whisper on [Groq](https://groq.com).
 - The fonts are Inter, Archivo Black, DM Serif Display, Instrument Serif, Pixelify Sans and TikTok Sans, all under the SIL Open Font License.
 
-Made by [Artem Novitckii](https://novitckii.com). MIT licensed.
+Made by [Artem Novitckii](https://novitckii.com). Code and authored instructions are MIT licensed; [image and sample-media rights are separate](assets/style-showcase/README.md#rights-and-sample-footage).

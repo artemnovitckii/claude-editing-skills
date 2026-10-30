@@ -1,12 +1,15 @@
 {
   "name": "claude-editing-skills",
-  "owner": { "name": "Artem Novitckii", "url": "https://novitckii.com" },
+  "owner": {
+    "name": "Artem Novitckii",
+    "url": "https://novitckii.com"
+  },
   "description": "Artem Novitckii's video editing skills for Claude Code.",
   "plugins": [
     {
       "name": "editing-skills",
       "source": "./",
-      "description": "Six skills that edit a talking-head clip into a finished reel: trial reels, behind the person, explainer, split screen, ranking list and storytelling."
+      "description": "Eleven local video editing skills, including five photographic styles with editable templates, image assets and moving previews."
     }
   ]
 }
